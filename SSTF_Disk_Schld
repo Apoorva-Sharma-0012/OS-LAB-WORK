@@ -1,0 +1,68 @@
+#include<stdio.h>
+#include<stdlib.h> 
+#include<stdbool.h>  
+
+int comparator(const void* a, const void* b)
+{
+  return *(int*)a - *(int*)b;
+}
+
+int l_index(int queue[], int n, bool visit[], int init_pos)
+{
+  int i,j;  // i = min & j = max
+  
+  for(i=n-1; i>=0; i--)
+  {
+    if(queue[i] <= init_pos && visit[i] == false) break;
+  }
+
+  for(j=0; j<n; j++)
+  {
+    if(queue[j] >= init_pos && visit[j] == false) break;
+  }
+
+  int min = abs(init_pos - queue[i]);
+  int max = abs(init_pos - queue[j]);
+
+  return min < max ? i : j;
+}
+
+int main()
+{
+    int total_cylinders,init_pos,n;
+    
+    printf("\nEnter the total no. of cylinders in HDD: ");
+    scanf("%d",&total_cylinders);
+    
+    printf("\nEnter the no. of cylinders to enter in Request queue: ");
+    scanf("%d",&n);
+
+    int queue[n]; 
+    bool visit[n];
+
+    for(int i=0; i<n; i++) visit[i] = false;
+
+    printf("\nEnter the cylinders no. in Request queue : ");
+    for(int i=0;i<n;i++) scanf("%d",&queue[i]);
+    
+    printf("\nEnter the initial Position of RW head: ");
+    scanf("%d",&init_pos);
+    
+    int total_head_movement = 0;
+
+    qsort(queue,n,sizeof(int),comparator);
+
+    for(int i=0; i<n; i++)
+    {
+      int index = l_index(queue,n,visit,init_pos);
+
+      total_head_movement += abs(init_pos - queue[index]);
+      visit[index] = true;
+      init_pos = queue[index];
+    }
+
+    printf("\nTotal No. of Head Movements = %d",total_head_movement);
+    printf("\nAverage head movements = %.2f",(float)total_head_movement/n);
+
+    return 0;
+}
